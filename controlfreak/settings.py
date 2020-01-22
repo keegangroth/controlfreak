@@ -24,8 +24,8 @@ SECRET_KEY = 'g)nvds9gb)(+2dd^9uj^5uo8nv)zgw2jlj#oqpfyj*5ygm3s#e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
+# not great, not sure how else to allow the alb through...
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
