@@ -8,4 +8,5 @@ urlpatterns = [
     path('register', views.device.register),
     path('devices', views.device.devices),
     path('devices/<int:device_id>', views.device.device),
+    path('credentials', views.credentials.credential)
 ]

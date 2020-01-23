@@ -41,8 +41,8 @@ def __get(device_id):
     if not result:
         raise Http404("Device does not exist")
     d = result.values()[0]
-    device_ids = list(DeviceId.objects.filter(device=d['id']).values())
-    d.update(device_ids=device_ids)
+    d.update(device_ids=list(result.first().device_ids.values()))
+    d.update(credentials=list(result.first().credentials.values()))
     return JsonResponse({'device': d})
 
 def __post(request):
@@ -54,12 +54,11 @@ def __post(request):
         return HttpResponseBadRequest('You must supply device ids')
 
     id_filter = reduce(lambda x, y: x | y, [Q(**d) for d in json_device_ids])
-    matches = DeviceId.objects.filter(id_filter)
-    if matches:
+    device_id = DeviceId.objects.filter(id_filter).first()
+    if device_id:
         # todo: handle multiple matching devices?
         # todo: add/update device ids?
-        device = matches[0].device
-        return JsonResponse({'token': device.token})
+        return JsonResponse({'token': device_id.device.token})
 
     try:
         device = Device(token=uuid.uuid4().hex)

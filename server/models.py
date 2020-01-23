@@ -11,6 +11,12 @@ class ApplicationModel(models.Model):
 class Device(ApplicationModel):
     token = models.CharField(max_length=100)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['token']),
+        ]
+        unique_together = ['token']
+
     def create_device_ids(self, ids):
         for new_id in ids:
             # not as efficient as bulk_create, but actually runs the
@@ -42,3 +48,15 @@ class DeviceId(ApplicationModel):
 
 # I'd prefer a DB constraint, but this will have to do for now
 models.signals.pre_save.connect(DeviceId.validate, sender=DeviceId)
+
+class Credential(ApplicationModel):
+    target = models.CharField(max_length=100)
+    user = models.CharField(max_length=100)
+    secret = models.CharField(max_length=100)
+    device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name='credentials')
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['target', 'user']),
+        ]
+        unique_together = [['target', 'user']]

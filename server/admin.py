@@ -4,3 +4,4 @@ from . import models
 
 admin.site.register(models.Device)
 admin.site.register(models.DeviceId)
+admin.site.register(models.Credential)
