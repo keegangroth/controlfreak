@@ -1,16 +1,25 @@
-from django.http import JsonResponse, Http404
+import json
+import uuid
+
+from functools import reduce
+
+from django.http import JsonResponse, Http404, HttpResponseBadRequest
+
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
+from django.db import IntegrityError
+from django.db.models import Q
 from server.models import Device, DeviceId
 
 @csrf_exempt
-@require_http_methods(['GET', 'POST'])
+@require_http_methods(['POST'])
+def register(request):
+    return __post(request)
+
+@require_http_methods(['GET'])
 def devices(request):
-    if request.method == 'GET':
-        return __all()
-    elif request.method == 'POST':
-        return __post(request)
+    return __all()
 
 @require_http_methods(['GET', 'PUT', 'PATCH'])
 def device(request, device_id):
@@ -37,7 +46,36 @@ def __get(device_id):
     return JsonResponse({'device': d})
 
 def __post(request):
-    return JsonResponse({})
+    if request.headers['content-type'] != 'application/json':
+        return HttpResponseBadRequest('Bad content-type, please use "application/json"')
+
+    json_data = json.loads(request.body.decode("utf-8"))
+    if not ('device_ids' in json_data and json_data['device_ids']):
+        return HttpResponseBadRequest('You must supply device ids')
+    json_device_ids = json_data['device_ids']
+
+    id_filter = reduce(lambda x, y: x | y, [Q(**d) for d in json_device_ids])
+    matches = DeviceId.objects.filter(id_filter)
+    if matches:
+        # todo: handle multiple matching devices?
+        # todo: add/update device ids?
+        device = matches[0].device
+        return JsonResponse({'token': device.token})
+
+    try:
+        device = Device(token=uuid.uuid4().hex)
+        device.save()
+        device.create_device_ids(json_device_ids)
+    except Exception as ex:
+        if device:
+            device.delete()
+
+        if type(ex) is IntegrityError:
+            return HttpResponseBadRequest(str(ex))
+        else:
+            raise(ex)
+
+    return JsonResponse({'token': device.token}, status=201)
 
 def __put(request, device_id):
     pass
