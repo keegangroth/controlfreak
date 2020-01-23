@@ -5,7 +5,12 @@ export ROOT_DIR="${SCRIPT_DIR}/.."
 IMAGE='controlfreak:latest'
 AWS_ACCOUNT='360384804147'
 
-set -ex
+set -e
+
+echo '+ docker login'
+$(aws ecr get-login --no-include-email --region us-west-2 --registry-ids 360384804147)
+
+set -x
 
 docker build -t $IMAGE $ROOT_DIR
 docker tag $IMAGE $AWS_ACCOUNT.dkr.ecr.us-west-2.amazonaws.com/$IMAGE
