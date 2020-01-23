@@ -49,10 +49,9 @@ def __post(request):
     if request.headers['content-type'] != 'application/json':
         return HttpResponseBadRequest('Bad content-type, please use "application/json"')
 
-    json_data = json.loads(request.body.decode("utf-8"))
-    if not ('device_ids' in json_data and json_data['device_ids']):
+    json_device_ids = __device_ids(request)
+    if not json_device_ids:
         return HttpResponseBadRequest('You must supply device ids')
-    json_device_ids = json_data['device_ids']
 
     id_filter = reduce(lambda x, y: x | y, [Q(**d) for d in json_device_ids])
     matches = DeviceId.objects.filter(id_filter)
@@ -79,3 +78,13 @@ def __post(request):
 
 def __put(request, device_id):
     pass
+
+def __device_ids(request):
+    json_data = json.loads(request.body.decode("utf-8"))
+    if not (('device_ids' in json_data and json_data['device_ids'])
+            or ('id_type' in json_data and 'value' in json_data)):
+        return None
+    if 'device_ids' in json_data:
+        return json_data['device_ids']
+    else:
+        return [json_data]
