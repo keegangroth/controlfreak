@@ -86,4 +86,5 @@ def __device_ids(request):
     if 'device_ids' in json_data:
         return json_data['device_ids']
     else:
+        json_data.pop('app_guid', None)
         return [json_data]
