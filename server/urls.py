@@ -8,7 +8,7 @@ router.register(r'devices', views.devices.DeviceViewSet)
 
 urlpatterns = [
     path('', views.utils.index),
-    path('health/', views.utils.health),
+    re_path('^health/?$', views.utils.health),
 
     path('', include(router.urls)),
     path('api/auth/', include('rest_framework.urls')),
