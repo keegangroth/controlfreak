@@ -24,7 +24,7 @@ https://controlfreak.lookoutdemo.com/
 
 ## TODO
 
-* Permanent RDS DB for production
 * Keylogger endpoint
+* automate applying migrations
 * Tests, linting, etc
 * CI infrastructure
