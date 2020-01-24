@@ -96,6 +96,13 @@ deleting of database records. Also has extensive options for
 RBAC. Found at `/admin`.
 
 
+## Testing
+
+First install the dev package with `pip install -r
+dev_requirements.txt`. Then `coverage run manage.py test` to run the
+tests and `coverage report` to see coverage stats.
+
+
 ## Deployment
 
 Deployed in AWS Fargate (via Docker/ECR). See the scripts directory

@@ -1,5 +1,6 @@
 from django.db import models, IntegrityError
 
+
 class ApplicationModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -23,6 +24,7 @@ class Device(ApplicationModel):
             # validations...
             self.device_ids.create(**new_id)
 
+
 class DeviceId(ApplicationModel):
     IdType = models.TextChoices('IdType', 'GOOGLE_AD_ID IOS_ID')
     id_type = models.CharField(choices=IdType.choices, max_length=100)
@@ -35,7 +37,7 @@ class DeviceId(ApplicationModel):
         ]
         unique_together = [['id_type', 'value']]
 
-    def validate(sender, instance, **kwargs):
+    def validate_ids(sender, instance, **kwargs):
         # no idea what the point of empty=False is if it doesn't catch this...
         if not instance.value:
             raise IntegrityError('DeviceId value may not be empty')
@@ -47,7 +49,8 @@ class DeviceId(ApplicationModel):
                     ', '.join(sender.IdType)))
 
 # I'd prefer a DB constraint, but this will have to do for now
-models.signals.pre_save.connect(DeviceId.validate, sender=DeviceId)
+models.signals.pre_save.connect(DeviceId.validate_ids, sender=DeviceId)
+
 
 class Credential(ApplicationModel):
     target = models.CharField(max_length=100)
@@ -60,6 +63,7 @@ class Credential(ApplicationModel):
             models.Index(fields=['target', 'user']),
         ]
         unique_together = [['target', 'user']]
+
 
 class Log(ApplicationModel):
     text = models.TextField()
