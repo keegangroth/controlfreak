@@ -60,3 +60,7 @@ class Credential(ApplicationModel):
             models.Index(fields=['target', 'user']),
         ]
         unique_together = [['target', 'user']]
+
+class Log(ApplicationModel):
+    text = models.TextField()
+    device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name='logs')

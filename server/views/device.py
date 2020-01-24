@@ -58,7 +58,8 @@ def __post(request):
     if device_id:
         # todo: handle multiple matching devices?
         # todo: add/update device ids?
-        return JsonResponse({'token': device_id.device.token})
+        return JsonResponse({'token': device_id.device.token,
+                             'id': device_id.device.pk})
 
     try:
         device = Device(token=uuid.uuid4().hex)
@@ -73,7 +74,7 @@ def __post(request):
         else:
             raise(ex)
 
-    return JsonResponse({'token': device.token}, status=201)
+    return JsonResponse({'token': device.token, 'id': device.pk}, status=201)
 
 def __put(request, device_id):
     pass

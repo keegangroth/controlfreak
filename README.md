@@ -63,6 +63,27 @@ if the secret for an existing entry is updated. The response body will
 be empty.
 
 
+### /logs
+
+Supports only POST request. The body must contain json like the
+following:
+
+```
+{
+    "token": "1234",
+    "log": "blah blah bla",
+}
+```
+
+Where `token` is the value from `/register` and `log` is whatever text
+sequence should be saved. If logs already exist for this device, the
+new value will be appended.
+
+There is also `/logs/clear` which accepts POST with just the token in
+the json body. Calling this api will permanently delete and logs for
+the given device.
+
+
 ### /devices
 
 TODO
@@ -84,7 +105,6 @@ https://controlfreak.lookoutdemo.com/admin
 
 ## TODO
 
-* Keylogger endpoint
 * automate applying migrations
 * Finish README
 * Tests, linting, etc

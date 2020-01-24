@@ -5,7 +5,8 @@ from django.http import JsonResponse, Http404, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from server.models import Device, Credential
+from server.models import Credential
+from server.views.helpers import device_from_token
 
 @csrf_exempt
 @require_http_methods(['POST'])
@@ -14,7 +15,7 @@ def credential(request):
         return HttpResponseBadRequest('Bad content-type, please use "application/json"')
 
     json_data = json.loads(request.body.decode("utf-8"))
-    device = __device(json_data.pop('token', None))
+    device = device_from_token(json_data.pop('token', None))
 
     if not __validate_request(json_data):
         return HttpResponseBadRequest('You must include non-empty target and user fields')
@@ -27,12 +28,6 @@ def credential(request):
     else:
         device.credentials.create(**json_data)
         return JsonResponse({}, status=201)
-
-def __device(request_token):
-    device = Device.objects.filter(token=request_token).first()
-    if not device:
-        raise Http404('Token not valid')
-    return device
 
 def __validate_request(json_data):
     for field in ['target', 'user']:
