@@ -19,7 +19,7 @@ def credential(request):
     if not __validate_request(json_data):
         return HttpResponseBadRequest('You must include non-empty target and user fields')
 
-    credential = device.credentials.get(target=json_data.get('target'), user=json_data.get('user'))
+    credential = device.credentials.filter(target=json_data.get('target'), user=json_data.get('user')).first()
     if credential:
         credential.secret = json_data.get('secret', '')
         credential.save()
