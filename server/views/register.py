@@ -1,14 +1,11 @@
 import json
 import uuid
-
 from functools import reduce
 
-from django.http import JsonResponse, Http404, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest
 
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-
-from django.shortcuts import render, get_object_or_404
 
 from django.db import IntegrityError
 from django.db.models import Q
@@ -17,50 +14,6 @@ from server.models import Device, DeviceId
 @csrf_exempt
 @require_http_methods(['POST'])
 def register(request):
-    return __post(request)
-
-@require_http_methods(['GET'])
-def devices(request):
-    return __all()
-
-@require_http_methods(['GET', 'PUT', 'PATCH'])
-def device(request, device_id):
-    if request.method == 'GET':
-        return __get(device_id)
-    else:
-        return __put(request, device_id)
-
-@require_http_methods(['GET'])
-def live_device(request, device_id):
-    device = get_object_or_404(Device, pk=device_id)
-    context = {
-        'logs': device.logs.all(),
-        'credentials': device.credentials.all(),
-    }
-    return render(request, 'controlfreak/live_device.html', context)
-
-def __all():
-    # why JsonResponse doesn't handle models and querysets idk!
-    devices = list(Device.objects.all().values())
-    for d in devices:
-        device_ids = list(DeviceId.objects.filter(device=d['id']).values())
-        d.update(device_ids=device_ids)
-    return JsonResponse({'devices': devices})
-
-def __get(device_id):
-    result = Device.objects.filter(pk=device_id)
-    if not result:
-        raise Http404("Device does not exist")
-    d = result.values()[0]
-    d.update(device_ids=list(result.first().device_ids.values()))
-    d.update(credentials=list(result.first().credentials.values()))
-    d.update(logs=list(result.first().logs.values()))
-    return JsonResponse({'device': d})
-
-def __post(request):
-    if request.headers['content-type'] != 'application/json':
-        return HttpResponseBadRequest('Bad content-type, please use "application/json"')
-
     json_device_ids = __device_ids(request)
     if not json_device_ids:
         return HttpResponseBadRequest('You must supply device ids')
@@ -87,9 +40,6 @@ def __post(request):
             raise(ex)
 
     return JsonResponse({'token': device.token, 'id': device.pk}, status=201)
-
-def __put(request, device_id):
-    pass
 
 def __device_ids(request):
     json_data = json.loads(request.body.decode("utf-8"))

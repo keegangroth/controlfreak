@@ -1,17 +1,20 @@
-from django.urls import path, re_path
+from django.urls import include, path, re_path
+from rest_framework import routers
 
 import server.views as views
+
+router = routers.DefaultRouter()
+router.register(r'devices', views.devices.DeviceViewSet)
 
 urlpatterns = [
     path('', views.utils.index),
     path('health/', views.utils.health),
 
-    path('devices/', views.device.devices),
-    path('devices/<int:device_id>/', views.device.device),
-    path('devices/<int:device_id>/live/', views.device.live_device),
+    path('', include(router.urls)),
+    path('api/auth/', include('rest_framework.urls')),
 
-    re_path(r'register/?$', views.device.register),
-    re_path(r'credentials/?$', views.credentials.credential),
-    re_path(r'logs/?$', views.logs.log),
-    re_path(r'logs/clear/?$', views.logs.clear),
+    re_path(r'^register/?$', views.register.register),
+    re_path(r'^credentials/?$', views.credentials.credential),
+    re_path(r'^logs/?$', views.logs.log),
+    re_path(r'^logs/clear/?$', views.logs.clear),
 ]
