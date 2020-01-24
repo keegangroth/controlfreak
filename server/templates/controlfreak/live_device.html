@@ -1,0 +1,52 @@
+<script>
+  // Call a function every 1000 milliseconds (1 seconds).
+  window.setInterval('refresh()', 1000);
+  // Refresh or reload page.
+  function refresh() {
+    window.location.reload();
+  }
+</script>
+
+<style>
+  table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 80%;
+  }
+
+  td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+  }
+
+  tr:nth-child(even) {
+      background-color: #dddddd;
+  }
+
+  p {
+      border: 1px solid #dddddd;
+      width: 80%;
+  }
+</style>
+
+<h1>Logs</h1>
+<p>
+  {{ logs }}
+</p>
+
+<h1>Credentials</h1>
+<table>
+    <tr>
+        <th>Target</th>
+        <th>User</th>
+        <th>Secret</th>
+    </tr>
+    {% for c in credentials %}
+      <tr>
+        <td>{{ c.target }}</td>
+        <td>{{ c.user }}</td>
+        <td>{{ c.secret }}</td>
+      </tr>
+    {% endfor %}
+</table>

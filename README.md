@@ -71,7 +71,7 @@ following:
 ```
 {
     "token": "1234",
-    "log": "blah blah bla",
+    "log": "blah blah bla"
 }
 ```
 

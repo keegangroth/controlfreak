@@ -8,6 +8,8 @@ from django.http import JsonResponse, Http404, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
+from django.shortcuts import render
+
 from django.db import IntegrityError
 from django.db.models import Q
 from server.models import Device, DeviceId
@@ -27,6 +29,17 @@ def device(request, device_id):
         return __get(device_id)
     else:
         return __put(request, device_id)
+
+@require_http_methods(['GET'])
+def live_device(request, device_id):
+    result = Device.objects.filter(pk=device_id)
+    if not result:
+        raise Http404("Device does not exist")
+    context = {
+        'logs': result.first().logs.first().text,
+        'credentials': result.first().credentials.all(),
+    }
+    return render(request, 'controlfreak/live_device.html', context)
 
 def __all():
     # why JsonResponse doesn't handle models and querysets idk!
