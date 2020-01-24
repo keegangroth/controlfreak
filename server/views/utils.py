@@ -4,7 +4,7 @@ from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the index.")
+    return HttpResponse("Welcome to controlfreak. Checkout <a href=https://source.corp.lookout.com/kroth/controlfreak>the source</a> for more info.")
 
 def health(request):
     executor = MigrationExecutor(connection)
