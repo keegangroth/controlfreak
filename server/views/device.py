@@ -43,6 +43,7 @@ def __get(device_id):
     d = result.values()[0]
     d.update(device_ids=list(result.first().device_ids.values()))
     d.update(credentials=list(result.first().credentials.values()))
+    d.update(logs=list(result.first().logs.values()))
     return JsonResponse({'device': d})
 
 def __post(request):
