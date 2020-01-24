@@ -14,7 +14,9 @@ $(aws ecr get-login --no-include-email --region us-west-2 --registry-ids $AWS_AC
 
 set -x
 
-docker build -t $IMAGE:latest -t $ECR/$IMAGE:${GIT_SHA} -t $ECR/$IMAGE:latest $ROOT_DIR
-docker push $ECR/$IMAGE
+docker build -t $IMAGE:latest -t $ECR/$IMAGE:$GIT_SHA -t $ECR/$IMAGE:latest $ROOT_DIR
+for TAG in latest $GIT_SHA; do
+    docker push $ECR/$IMAGE:$TAG
+done
 
 aws ecs update-service --cluster controlfreak --service controlfreak-int --force-new-deployment
