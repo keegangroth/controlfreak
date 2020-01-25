@@ -96,11 +96,16 @@ deleting of database records. Also has extensive options for
 RBAC. Found at `/admin`.
 
 
+## Docker
+
+`docker build -t controlfreak:latest .`
+`docker run -p 8000:80 -v $(pwd):/usr/src/app controlfreak`
+`docker run controlfreak <whatever django command>`
+
+
 ## Testing
 
-First install the dev package with `pip install -r
-dev_requirements.txt`. Then `coverage run manage.py test` to run the
-tests and `coverage report` to see coverage stats.
+`coverage run manage.py test && coverage report`
 
 
 ## Deployment
@@ -112,6 +117,7 @@ https://controlfreak.lookoutdemo.com/admin
 
 ## TODO
 
+* app guid checking
 * automate applying migrations
 * Finish README
 * Tests, linting, etc

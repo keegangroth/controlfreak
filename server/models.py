@@ -60,9 +60,9 @@ class Credential(ApplicationModel):
 
     class Meta:
         indexes = [
-            models.Index(fields=['target', 'user']),
+            models.Index(fields=['target', 'user', 'device_id']),
         ]
-        unique_together = [['target', 'user']]
+        unique_together = [['target', 'user', 'device_id']]
 
 
 class Log(ApplicationModel):
