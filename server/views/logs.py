@@ -1,46 +1,37 @@
-import json
+from django.shortcuts import get_object_or_404
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.parsers import JSONParser
+from rest_framework.response import Response
 
-from django.http import JsonResponse, HttpResponseBadRequest
+from server.models import Log, Device
 
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
 
-from server.models import Log
-from server.views.helpers import device_from_token
+@api_view(['POST'])
+@parser_classes([JSONParser])
+def log(request, format=None):
+    device = get_object_or_404(Device, token=request.data.pop('token', None))
 
-@csrf_exempt
-@require_http_methods(['POST'])
-def log(request):
-    if request.headers['content-type'] != 'application/json':
-        return HttpResponseBadRequest('Bad content-type, please use "application/json"')
-
-    json_data = json.loads(request.body.decode("utf-8"))
-    device = device_from_token(json_data.pop('token', None))
-
-    if not 'log' in json_data:
-        return HttpResponseBadRequest('You must include a log')
+    try:
+        text = request.data['log']
+    except KeyError:
+        return Response({'log': 'This field is required'}, status=400)
 
     log = device.logs.first()
-    if not log:
-        log = device.logs.create(text=json_data['log'])
+    if log:
+        log.text += text
         log.save()
-        return JsonResponse({}, status=201)
+        return Response({})
 
-    log.text += json_data['log']
-    log.save()
-    return JsonResponse({})
+    log = device.logs.create(text=text)
+    return Response({}, status=201)
 
-@csrf_exempt
-@require_http_methods(['POST'])
-def clear(request):
-    if request.headers['content-type'] != 'application/json':
-        return HttpResponseBadRequest('Bad content-type, please use "application/json"')
-
-    json_data = json.loads(request.body.decode("utf-8"))
-    device = device_from_token(json_data.pop('token', None))
+@api_view(['POST'])
+@parser_classes([JSONParser])
+def clear(request, format=None):
+    device = get_object_or_404(Device, token=request.data.pop('token', None))
 
     log = device.logs.first()
     if log:
         log.delete()
 
-    return JsonResponse({})
+    return Response({})

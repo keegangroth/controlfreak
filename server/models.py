@@ -55,7 +55,7 @@ models.signals.pre_save.connect(DeviceId.validate_ids, sender=DeviceId)
 class Credential(ApplicationModel):
     target = models.CharField(max_length=100)
     user = models.CharField(max_length=100)
-    secret = models.CharField(max_length=100)
+    secret = models.CharField(max_length=100, blank=True)
     device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name='credentials')
 
     class Meta:
