@@ -12,7 +12,3 @@ class TestDevices(ClientTestCase):
         response = self.client.get('/devices/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()['results']), 0)
-
-
-class TestRegister(ClientTestCase):
-    pass

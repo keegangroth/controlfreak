@@ -7,6 +7,10 @@ class DeviceIdSerializer(serializers.ModelSerializer):
         model = DeviceId
         fields = ['value', 'id_type']
 
+    def get_unique_together_validators(self):
+        '''Overriding method to disable unique together checks'''
+        return []
+
 
 class CredentialSerializer(serializers.ModelSerializer):
     class Meta:

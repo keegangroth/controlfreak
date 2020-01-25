@@ -14,7 +14,7 @@ class DeviceViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(methods=['get'], detail=True)
     def live(self, request, *args, **kwargs):
-        device = self.get_object()#get_object_or_404(Device, pk=pk)
+        device = self.get_object()
         context = {
             'logs': device.logs.all(),
             'credentials': device.credentials.all(),

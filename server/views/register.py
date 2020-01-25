@@ -1,53 +1,47 @@
-import json
 import uuid
 from functools import reduce
 
-from django.http import JsonResponse, HttpResponseBadRequest
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.parsers import JSONParser
+from rest_framework.response import Response
 
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
-
+from django.db import transaction
 from django.db import IntegrityError
 from django.db.models import Q
+
 from server.models import Device, DeviceId
+from server.serializers import DeviceIdSerializer
 
-@csrf_exempt
-@require_http_methods(['POST'])
+
+@api_view(['POST'])
+@parser_classes([JSONParser])
 def register(request):
-    json_device_ids = __device_ids(request)
-    if not json_device_ids:
-        return HttpResponseBadRequest('You must supply device ids')
+    request_ids = []
+    if 'id_type' in request.data:
+        request_ids += [DeviceIdSerializer(data=request.data)]
+    if 'device_ids' in request.data:
+        request_ids += [DeviceIdSerializer(data=d) for d in request.data['device_ids']]
 
-    id_filter = reduce(lambda x, y: x | y, [Q(**d) for d in json_device_ids])
+    if not request_ids:
+        return Response({'device_ids': 'This field is required'}, status=400)
+
+    for request_id in request_ids:
+        if not request_id.is_valid():
+            return Response(request_id.errors, status=400)
+
+    id_filter = reduce(lambda x, y: x | y, [Q(**d.data) for d in request_ids])
     device_id = DeviceId.objects.filter(id_filter).first()
     if device_id:
         # todo: handle multiple matching devices?
         # todo: add/update device ids?
-        return JsonResponse({'token': device_id.device.token,
-                             'id': device_id.device.pk})
+        return Response({'token': device_id.device.token,
+                         'id': device_id.device.pk})
 
     try:
-        device = Device(token=uuid.uuid4().hex)
-        device.save()
-        device.create_device_ids(json_device_ids)
-    except Exception as ex:
-        if device:
-            device.delete()
+        with transaction.atomic():
+            device = Device.objects.create(token=uuid.uuid4().hex)
+            device.create_device_ids([d.data for d in request_ids])
+    except IntegrityError as ex:
+        return Response({'errors': [str(ex)]}, status=400)
 
-        if isinstance(ex) is IntegrityError:
-            return HttpResponseBadRequest(str(ex))
-
-        raise ex
-
-    return JsonResponse({'token': device.token, 'id': device.pk}, status=201)
-
-def __device_ids(request):
-    json_data = json.loads(request.body.decode("utf-8"))
-    if not (('device_ids' in json_data and json_data['device_ids'])
-            or ('id_type' in json_data and 'value' in json_data)):
-        return None
-    if 'device_ids' in json_data:
-        return json_data['device_ids']
-
-    json_data.pop('app_guid', None)
-    return [json_data]
+    return Response({'token': device.token, 'id': device.pk}, status=201)
