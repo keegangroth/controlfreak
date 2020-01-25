@@ -1,14 +1,7 @@
-from django.test import TestCase, Client
 from django.contrib.auth.models import User
+from server.tests.fixtures.client import ClientTestCase
 
-
-class WithClient(TestCase):
-    def setUp(self):
-        super().setUp()
-        self.client = Client()
-
-
-class TestDevices(TestCase):
+class TestDevices(ClientTestCase):
     def test_devices_view_auth(self):
         response = self.client.get('/devices/')
         self.assertEqual(response.status_code, 403)
@@ -21,5 +14,5 @@ class TestDevices(TestCase):
         self.assertEqual(len(response.json()['results']), 0)
 
 
-class TestRegister(TestCase):
+class TestRegister(ClientTestCase):
     pass
