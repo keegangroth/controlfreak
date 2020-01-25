@@ -4,3 +4,5 @@ djangorestframework
 mysqlclient
 
 coverage
+pylint
+pylint-django

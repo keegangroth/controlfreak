@@ -1,0 +1,12 @@
+[MASTER]
+load-plugins=pylint_django
+
+[FORMAT]
+max-line-length=120
+
+[DESIGN]
+max-branches=13
+max-parents=10
+
+[SIMILARITIES]
+min-similarity-lines=5

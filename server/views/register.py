@@ -34,10 +34,10 @@ def register(request):
         if device:
             device.delete()
 
-        if type(ex) is IntegrityError:
+        if isinstance(ex) is IntegrityError:
             return HttpResponseBadRequest(str(ex))
-        else:
-            raise(ex)
+
+        raise ex
 
     return JsonResponse({'token': device.token, 'id': device.pk}, status=201)
 
@@ -48,6 +48,6 @@ def __device_ids(request):
         return None
     if 'device_ids' in json_data:
         return json_data['device_ids']
-    else:
-        json_data.pop('app_guid', None)
-        return [json_data]
+
+    json_data.pop('app_guid', None)
+    return [json_data]

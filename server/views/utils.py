@@ -9,8 +9,8 @@ def index(request):
 def health(request):
     executor = MigrationExecutor(connection)
     plan = executor.migration_plan(executor.loader.graph.leaf_nodes())
-    db = { 'name': connection.settings_dict['NAME'],
-           'engine': connection.settings_dict['ENGINE'],
-           'pending_migrations': [p[0].name for p in plan] }
+    db_info = {'name': connection.settings_dict['NAME'],
+               'engine': connection.settings_dict['ENGINE'],
+               'pending_migrations': [p[0].name for p in plan]}
     status = 503 if plan else 200
-    return JsonResponse({'db': db}, status=status)
+    return JsonResponse({'db': db_info}, status=status)

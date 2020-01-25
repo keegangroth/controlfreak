@@ -103,7 +103,6 @@ class TestDeviceId(TestCase):
         DeviceId.objects.create(device=device,
                                 id_type='GOOGLE_AD_ID',
                                 value=value)
-        device2 = Device.objects.create(token='bar')
         with self.assertRaises(IntegrityError):
             DeviceId.objects.create(device=device,
                                     id_type='GOOGLE_AD_ID',

@@ -3,12 +3,12 @@ from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
-from server.models import Log, Device
+from server.models import Device
 
 
 @api_view(['POST'])
 @parser_classes([JSONParser])
-def log(request, format=None):
+def logs(request):
     device = get_object_or_404(Device, token=request.data.pop('token', None))
 
     try:
@@ -27,7 +27,7 @@ def log(request, format=None):
 
 @api_view(['POST'])
 @parser_classes([JSONParser])
-def clear(request, format=None):
+def clear(request):
     device = get_object_or_404(Device, token=request.data.pop('token', None))
 
     log = device.logs.first()

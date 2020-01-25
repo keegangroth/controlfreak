@@ -1,16 +1,15 @@
 import json
 
 from server.tests.fixtures.client import ClientTestCase
-
-from server.models import Device, Credential
+from server.models import Device
 
 
 class TestLogView(ClientTestCase):
+    '''Tests of the logs view'''
     def setUp(self):
         super().setUp()
         self.device = Device.objects.create(token='foo')
 
-    '''Tests of the logs view'''
     def test_non_json(self):
         '''Handle non json request gracefully'''
         response = self.client.post('/credentials/', 'hi',

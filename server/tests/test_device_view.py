@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from server.tests.fixtures.client import ClientTestCase
 
 class TestDevices(ClientTestCase):
-    def test_devices_view_auth(self):
+    def test_devices_view_no_auth(self):
         response = self.client.get('/devices/')
         self.assertEqual(response.status_code, 403)
 

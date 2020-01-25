@@ -30,7 +30,7 @@ class DeviceIdAdmin(admin.ModelAdmin):
     # Make a link to the associated device since that's what we really
     # care about
     def device_link(self, obj):
-        url = reverse('admin:server_device_change', args = [obj.device.id])
+        url = reverse('admin:server_device_change', args=[obj.device.id])
         return format_html("<a href='{}'>{}</a>", url, obj.device)
     device_link.admin_order_field = 'device'
     device_link.short_description = 'device'
