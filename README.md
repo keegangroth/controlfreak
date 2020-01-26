@@ -1,7 +1,7 @@
 # controlfreak
 
-Command and Control server for sales demo malware apps. Written
-(poorly) in Python + Django during Hackathon IX.
+Command and Control server for sales demo malware apps. Written in
+Python + Django (with django-rest-framework) during Hackathon IX.
 
 
 ## APIs
@@ -14,7 +14,7 @@ following:
 ```
 {
     "id_type": "GOOGLE_AD_ID",
-    "value": "1234",
+    "value": "0987",
     "app_guid": "my app guid"
 }
 ```
@@ -100,7 +100,7 @@ RBAC. Found at `/admin`.
 
 `docker build -t controlfreak:latest .`
 `docker run -p 8000:80 -v $(pwd):/usr/src/app controlfreak`
-`docker run controlfreak <whatever django command>`
+`docker run controlfreak coverage run manage.py test && coverage report`
 
 
 ## Testing
@@ -117,8 +117,7 @@ https://controlfreak.lookoutdemo.com/admin
 
 ## TODO
 
-* app guid checking
-* automate applying migrations
 * Finish README
-* Tests, linting, etc
-* CI infrastructure
+* automate applying migrations
+* app guid checking
+* CI/CD infrastructure

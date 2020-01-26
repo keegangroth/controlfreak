@@ -5,6 +5,7 @@ omit =
      server/tests/*
      server/migrations/*
      server/apps.py
+     server/admin.py
 
 [report]
 fail_under = 100
