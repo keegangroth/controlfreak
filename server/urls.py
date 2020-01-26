@@ -1,8 +1,11 @@
+'''Django routing configuration.'''
+
 from django.urls import include, path, re_path
 from rest_framework import routers
 
 import server.views as views
 
+# pylint: disable=invalid-name
 router = routers.DefaultRouter()
 router.register(r'devices', views.devices.DeviceViewSet)
 

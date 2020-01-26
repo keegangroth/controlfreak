@@ -1,3 +1,5 @@
+'''View for the /register api'''
+
 import uuid
 from functools import reduce
 
@@ -16,6 +18,11 @@ from server.serializers import DeviceIdSerializer
 @api_view(['POST'])
 @parser_classes([JSONParser])
 def register(request):
+    '''Register a device
+
+    Given a set of device identifiers, find or create a device and
+    return the token for it.
+    '''
     request_ids = []
     if 'id_type' in request.data:
         request_ids += [DeviceIdSerializer(data=request.data)]
@@ -32,8 +39,8 @@ def register(request):
     id_filter = reduce(lambda x, y: x | y, [Q(**d.data) for d in request_ids])
     device_id = DeviceId.objects.filter(id_filter).first()
     if device_id:
-        # todo: handle multiple matching devices?
-        # todo: add/update device ids?
+        # handle multiple matching devices?
+        # add/update device ids?
         return Response({'token': device_id.device.token,
                          'id': device_id.device.pk})
 

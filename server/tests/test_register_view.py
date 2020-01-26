@@ -1,3 +1,5 @@
+'''Tests of the /register api'''
+
 import json
 
 from server.tests.fixtures.client import ClientTestCase

@@ -1,3 +1,5 @@
+'''Tests of the /logs apis'''
+
 import json
 
 from server.tests.fixtures.client import ClientTestCase

@@ -1,3 +1,5 @@
+'''Tests of the /devices apis'''
+
 from server.tests.fixtures.client import ClientTestCase, LoggedInTestCase
 
 from server.models import Device
@@ -29,12 +31,14 @@ class TestDevices(LoggedInTestCase):
         self.assertEqual(response.status_code, 405)
 
     def test_no_devices(self):
+        '''Returns 200 and a response even with no devices'''
         response = self.client.get('/devices/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()['results']), 0)
         self.assertEqual(response.json()['count'], 0)
 
     def test_devices(self):
+        '''With devices, returns them in the expected format'''
         Device.objects.create(token='foo')
         Device.objects.create(token='bar')
         response = self.client.get('/devices/')
@@ -110,6 +114,7 @@ class TestDevicesLive(LoggedInTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_device_live(self):
+        '''Renders the proper template'''
         device = Device.objects.create(token='foo')
         response = self.client.get('/devices/%s/live/' % device.pk)
         self.assertEqual(response.status_code, 200)

@@ -1,16 +1,10 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ROOT_DIR="${SCRIPT_DIR}/.."
-IMAGE='controlfreak'
-AWS_ACCOUNT='360384804147'
-GIT_SHA=$(git rev-parse --short HEAD)
-ECR=$AWS_ACCOUNT.dkr.ecr.us-west-2.amazonaws.com
+. $(dirname $0)/__init__.sh
 
-set -ex
+set -e
 
-docker build -t $IMAGE:latest -t $ECR/$IMAGE:$GIT_SHA -t $ECR/$IMAGE:latest $ROOT_DIR
-docker run $IMAGE:latest coverage run manage.py test && coverage report
+$(dirname $0)/build.sh
 
 set +x
 echo '+ docker login'

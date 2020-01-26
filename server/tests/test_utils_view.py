@@ -1,3 +1,5 @@
+'''Tests of the util apis (like /health)'''
+
 from server.tests.fixtures.client import ClientTestCase
 
 

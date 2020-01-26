@@ -1,3 +1,5 @@
+'''Tests of the db models'''
+
 from django.test import TestCase
 from django.db.utils import IntegrityError
 

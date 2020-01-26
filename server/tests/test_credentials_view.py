@@ -1,3 +1,5 @@
+'''Tests of the /credentials api'''
+
 import json
 
 from server.tests.fixtures.client import ClientTestCase

@@ -1,3 +1,5 @@
+'''View for the /credentials api'''
+
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import JSONParser
@@ -9,6 +11,7 @@ from server.serializers import CredentialSerializer
 @api_view(['POST'])
 @parser_classes([JSONParser])
 def credential(request):
+    '''Save the provided credential'''
     device = get_object_or_404(Device, token=request.data.pop('token', None))
 
     serializer = CredentialSerializer(data=request.data)
