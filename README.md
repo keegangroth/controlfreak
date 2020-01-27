@@ -205,18 +205,16 @@ permissions to read from Secrets Manager.
 
 ### DB Migrations
 
-Database migrations are not automatically applied duing deploys. New
-instances which require migrations will not be healthy (and therefore
-receive no traffic) until the migrations have been run.
-
-In order to run migrations, simply update the `controlfreak-migrate`
-service in the `controlfreak` ECS cluster to have a single task. Once
-the task has run and exited, set the service back to zero instances.
+The deploy script executes an ECS task to run migration
+automatically. The configuration for this must be kept up-to-date with
+the running service, primarily the networkConfiguration, cluster, and
+taskDefinition sections. Server instances which require migrations will
+not be healthy (and therefore receive no traffic) until the migrations
+have been run.
 
 
 ## TODO
 
-* automate applying migrations
 * app guid checking
 * stop using django debug mode when deployed
 * CI/CD infrastructure

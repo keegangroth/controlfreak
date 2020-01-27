@@ -1,0 +1,26 @@
+{
+  "cluster": "controlfreak",
+  "count": 1,
+  "group": "controlfreak-migrate",
+  "launchType": "FARGATE",
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "assignPublicIp": "DISABLED",
+      "securityGroups": [ "sg-0b0373ff7bc3bda5c" ],
+      "subnets": [
+        "subnet-03413c976ca3637a2",
+        "subnet-086ffd4685c2aec7a"
+      ]
+    }
+  },
+  "taskDefinition": "controlfreak",
+  "overrides": {
+    "containerOverrides": [
+      {
+	"name": "controlfreak",
+        "command": [ "python", "manage.py","migrate" ]
+      }
+    ]
+  }
+}
+
