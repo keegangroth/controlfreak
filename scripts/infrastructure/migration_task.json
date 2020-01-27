@@ -21,6 +21,16 @@
         "command": [ "python", "manage.py", "migrate" ]
       }
     ]
-  }
+  },
+  "tags": [
+    {
+      "key": "service",
+      "value": "sales-demo"
+    },
+    {
+      "key": "Name",
+      "value": "controlfreak"
+    }
+  ]
 }
 
