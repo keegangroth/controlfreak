@@ -1,8 +1,10 @@
 django
 djangorestframework
 
+# required to connect to a mysql db, e.g. when deployed
 mysqlclient
 
+# development dependencies (testing, etc)
 coverage
 pylint
 pylint-django

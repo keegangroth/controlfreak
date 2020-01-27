@@ -7,6 +7,7 @@ set -e
 $(dirname $0)/build.sh
 
 if [[ -n $(git status --porcelain --untracked-files=no) ]]; then
+    echo '+ git diff --stat'
     git diff --stat
     echo "Do not deploy uncommitted changes!"
     exit 1
