@@ -218,4 +218,5 @@ the task has run and exited, set the service back to zero instances.
 
 * automate applying migrations
 * app guid checking
+* stop using django debug mode when deployed
 * CI/CD infrastructure
