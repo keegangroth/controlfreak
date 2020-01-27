@@ -10,7 +10,7 @@ from server.serializers import DeviceSerializer
 
 
 class DeviceViewSet(viewsets.ReadOnlyModelViewSet):
-    '''View set supply read-only access to the devices table'''
+    '''View set supplying read-only access to the devices table'''
 
     queryset = Device.objects.all().order_by('-created_at')
     serializer_class = DeviceSerializer
