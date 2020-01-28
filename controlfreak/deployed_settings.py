@@ -20,5 +20,8 @@ DATABASES = {
         'USER': rds_config['username'],
         'PASSWORD': rds_config['password'],
         'NAME': rds_config['dbname'],
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
