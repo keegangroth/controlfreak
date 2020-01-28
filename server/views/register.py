@@ -23,7 +23,7 @@ def register(request):
     Given a set of device identifiers, find or create a device and
     return the token for it.
     '''
-    app = App.objects.filter(api_key=request.data.get('app_guid')).first()
+    app = App.objects.filter(api_key=request.data.get('api_key')).first()
     if not app:
         return Response({'detail': 'Authentication credentials were not provided.'}, status=403)
 

@@ -57,12 +57,12 @@ following:
 {
     "id_type": "GOOGLE_AD_ID",
     "value": "0987",
-    "app_guid": "my secret value"
+    "api_key": "my secret value"
 }
 ```
 
 Where `id_type` is on of the values from the `DeviceId` model in
-`server/models.py`, `value` is the actual identifier, and `app_guid`
+`server/models.py`, `value` is the actual identifier, and `api_key`
 is a shared "secret" identifying which app is doing the registration.
 
 HTTP response code may be either 201 if a new entry is created or 200
@@ -80,13 +80,13 @@ Where `token` is used to identify the device on subsequent calls to
 other apis and `id` is the database pk for the record which can be
 used in the `/device/:id` route described below.
 
-#### App GUIDs
+#### API Keys
 
-The `app_guid` field must correspond to an existing item. New Apps can
+The `api_key` field must correspond to an existing item. New Apps can
 be created through the admin interface by providing a `name` and
 `api_key`.
 
-The `api_key` is what must be provided in `app_guid` in register
+The `api_key` is what must be provided in `api_key` in register
 requests. It can be any value, but must be unique and should be hard
 to guess, so something like a GUID or secret key is recommended.
 

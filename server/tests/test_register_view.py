@@ -17,7 +17,7 @@ class TestRegister(ClientTestCase):
                                     content_type='text/plain')
         self.assertEqual(response.status_code, 415)
 
-    def test_missing_app_guid(self):
+    def test_missing_api_key(self):
         '''Returns 403 for missing device ids'''
         request = {}
         response = self.client.post('/register/',
@@ -25,9 +25,9 @@ class TestRegister(ClientTestCase):
                                     content_type='application/json')
         self.assertEqual(response.status_code, 403)
 
-    def test_invalid_app_guid(self):
+    def test_invalid_api_key(self):
         '''Returns 403 for missing device ids'''
-        request = {'app_guid': 'bogus'}
+        request = {'api_key': 'bogus'}
         response = self.client.post('/register/',
                                     json.dumps(request),
                                     content_type='application/json')
@@ -35,7 +35,7 @@ class TestRegister(ClientTestCase):
 
     def test_missing_device_id(self):
         '''Returns 400 for missing device ids'''
-        request = {'app_guid': self.app.api_key}
+        request = {'api_key': self.app.api_key}
         response = self.client.post('/register/',
                                     json.dumps(request),
                                     content_type='application/json')
@@ -44,7 +44,7 @@ class TestRegister(ClientTestCase):
 
     def test_missing_id_type(self):
         '''Returns 400 for missing id_type'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'value': 'abc'}
         response = self.client.post('/register/',
                                     json.dumps(request),
@@ -54,7 +54,7 @@ class TestRegister(ClientTestCase):
 
     def test_invalid_id_type(self):
         '''Returns 400 for invalid id_type'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'value': 'abc',
                    'id_type': 'bogus'}
         response = self.client.post('/register/',
@@ -65,7 +65,7 @@ class TestRegister(ClientTestCase):
 
     def test_missing_value(self):
         '''Returns 400 for missing value'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'id_type': 'GOOGLE_AD_ID'}
         response = self.client.post('/register/',
                                     json.dumps(request),
@@ -75,7 +75,7 @@ class TestRegister(ClientTestCase):
 
     def test_empty_value(self):
         '''Returns 400 for empty value'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'value': '',
                    'id_type': 'GOOGLE_AD_ID'}
         response = self.client.post('/register/',
@@ -86,7 +86,7 @@ class TestRegister(ClientTestCase):
 
     def test_creates_device(self):
         '''Creates a device for new device ids'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'value': 'abc',
                    'id_type': 'GOOGLE_AD_ID'}
         response = self.client.post('/register/',
@@ -102,7 +102,7 @@ class TestRegister(ClientTestCase):
 
     def test_existing_device(self):
         '''Return existing device if ids match'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'value': 'abc',
                    'id_type': 'GOOGLE_AD_ID'}
         # create a "wrong" device it should not find
@@ -120,7 +120,7 @@ class TestRegister(ClientTestCase):
 
     def test_existing_device_new_token(self):
         '''Return existing device if ids match'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'value': 'abc',
                    'id_type': 'GOOGLE_AD_ID'}
         device = Device.objects.create()
@@ -136,7 +136,7 @@ class TestRegister(ClientTestCase):
 
     def test_multiple_apps(self):
         '''Return existing device if ids match'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'value': 'abc',
                    'id_type': 'GOOGLE_AD_ID'}
         device = Device.objects.create()
@@ -150,7 +150,7 @@ class TestRegister(ClientTestCase):
         self.assertEqual(response.json()['token'], token.token)
         self.assertEqual(response.json()['id'], device.pk)
         app2 = App.objects.create(name='oof', api_key='rab')
-        request['app_guid'] = app2.api_key
+        request['api_key'] = app2.api_key
         response = self.client.post('/register/',
                                     json.dumps(request),
                                     content_type='application/json')
@@ -169,7 +169,7 @@ class TestRegisterMultipleIds(ClientTestCase):
 
     def test_missing_id_type(self):
         '''Returns 400 for missing id_type'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'device_ids': [{'value': 'abc'}]}
         response = self.client.post('/register/',
                                     json.dumps(request),
@@ -179,7 +179,7 @@ class TestRegisterMultipleIds(ClientTestCase):
 
     def test_invalid_id_type(self):
         '''Returns 400 for invalid id_type'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'device_ids': [{'value': 'abc', 'id_type': 'bogus'}]}
         response = self.client.post('/register/',
                                     json.dumps(request),
@@ -189,7 +189,7 @@ class TestRegisterMultipleIds(ClientTestCase):
 
     def test_missing_value(self):
         '''Returns 400 for missing value'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'device_ids': [{'id_type': 'GOOGLE_AD_ID'}]}
         response = self.client.post('/register/',
                                     json.dumps(request),
@@ -199,7 +199,7 @@ class TestRegisterMultipleIds(ClientTestCase):
 
     def test_empty_value(self):
         '''Returns 400 for empty value'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'device_ids': [{'value': '', 'id_type': 'GOOGLE_AD_ID'}]}
         response = self.client.post('/register/',
                                     json.dumps(request),
@@ -209,7 +209,7 @@ class TestRegisterMultipleIds(ClientTestCase):
 
     def test_creates_device(self):
         '''Creates a device for new device ids'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'device_ids': [{'value': 'abc', 'id_type': 'GOOGLE_AD_ID'},
                                   {'value': 'efg', 'id_type': 'GOOGLE_AD_ID'}]}
         response = self.client.post('/register/',
@@ -225,7 +225,7 @@ class TestRegisterMultipleIds(ClientTestCase):
 
     def test_creates_device_multiple_fields(self):
         '''Creates a device for new device ids'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'device_ids': [{'value': 'abc', 'id_type': 'GOOGLE_AD_ID'}],
                    'value': 'efg', 'id_type': 'GOOGLE_AD_ID'}
         response = self.client.post('/register/',
@@ -241,7 +241,7 @@ class TestRegisterMultipleIds(ClientTestCase):
 
     def test_duplicate_ids_in_request(self):
         '''Handles duplicate ids in the request'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'device_ids': [{'value': 'abc', 'id_type': 'GOOGLE_AD_ID'},
                                   {'value': 'abc', 'id_type': 'GOOGLE_AD_ID'}]}
         response = self.client.post('/register/',
@@ -255,7 +255,7 @@ class TestRegisterMultipleIds(ClientTestCase):
 
     def test_existing_device(self):
         '''Return existing device if ids match'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'device_ids': [{'value': 'abc', 'id_type': 'GOOGLE_AD_ID'},
                                   {'value': 'efg', 'id_type': 'GOOGLE_AD_ID'}]}
         # create a "wrong" device it should not find
@@ -272,7 +272,7 @@ class TestRegisterMultipleIds(ClientTestCase):
 
     def test_existing_device_multiple_ids(self):
         '''Return existing device if ids match'''
-        request = {'app_guid': self.app.api_key,
+        request = {'api_key': self.app.api_key,
                    'device_ids': [{'value': 'abc', 'id_type': 'GOOGLE_AD_ID'},
                                   {'value': 'efg', 'id_type': 'GOOGLE_AD_ID'}]}
         device = Device.objects.create()
