@@ -1,4 +1,4 @@
-django
+django ~= 3.0
 djangorestframework
 
 # required to connect to a mysql db, e.g. when deployed
