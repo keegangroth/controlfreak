@@ -2,7 +2,7 @@
 
 from server.tests.fixtures.client import ClientTestCase, LoggedInTestCase
 
-from server.models import Device
+from server.models import App, Device
 
 
 class TestDevicesLoggedOut(ClientTestCase):
@@ -39,17 +39,15 @@ class TestDevices(LoggedInTestCase):
 
     def test_devices(self):
         '''With devices, returns them in the expected format'''
-        Device.objects.create(token='foo')
-        Device.objects.create(token='bar')
+        Device.objects.create()
+        Device.objects.create()
         response = self.client.get('/devices/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()['results']), 2)
         self.assertEqual(response.json()['count'], 2)
-        tokens = [r['token'] for r in response.json()['results']]
-        # fancy wy of checking that no records are repeated
-        self.assertEqual(sorted(tokens), sorted([*{*tokens}]))
-        for result_device in response.json()['results']:
-            self.assertIsNotNone(Device.objects.get(token=result_device['token']))
+        urls = [r['url'] for r in response.json()['results']]
+        # fancy way of checking that no records are repeated
+        self.assertEqual(sorted(urls), sorted([*{*urls}]))
 
 
 class TestDevicesDetail(LoggedInTestCase):
@@ -66,34 +64,46 @@ class TestDevicesDetail(LoggedInTestCase):
 
     def test_devices_detail(self):
         '''Returns device info and associations'''
-        device = Device.objects.create(token='foo')
+        device = Device.objects.create()
         response = self.client.get('/devices/%s/' % device.pk)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['token'], device.token)
+        self.assertEqual(response.json()['tokens'], [])
         self.assertEqual(response.json()['device_ids'], [])
         self.assertEqual(response.json()['logs'], [])
         self.assertEqual(response.json()['credentials'], [])
 
-    def test_device_logs(self):
-        '''Returns device logs'''
-        device = Device.objects.create(token='foo')
-        device.logs.create(text='bar')
+    def test_device_tokens(self):
+        '''Returns device tokens'''
+        device = Device.objects.create()
+        app = App.objects.create(name='bar', api_key='baz')
+        token = device.tokens.create(token='foo', app=app)
         response = self.client.get('/devices/%s/' % device.pk)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['logs'], ['bar'])
+        self.assertEqual(response.json()['tokens'], [{'app': app.name, 'token': token.token}])
+
+    def test_device_logs(self):
+        '''Returns device logs'''
+        device = Device.objects.create()
+        app = App.objects.create(name='baz', api_key='foo')
+        device.logs.create(text='bar', app=app)
+        response = self.client.get('/devices/%s/' % device.pk)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['logs'], [{'app': app.name, 'text': 'bar'}])
 
     def test_device_credentials(self):
         '''Returns device credentials'''
-        device = Device.objects.create(token='foo')
+        device = Device.objects.create()
+        app = App.objects.create(name='fred', api_key='daphne')
         creds = {'user': 'bar', 'target': 'baz', 'secret': '123'}
-        device.credentials.create(**creds)
+        device.credentials.create(app=app, **creds)
         response = self.client.get('/devices/%s/' % device.pk)
         self.assertEqual(response.status_code, 200)
+        creds['app'] = app.name
         self.assertEqual(response.json()['credentials'], [creds])
 
     def test_device_device_ids(self):
         '''Returns device device_ids'''
-        device = Device.objects.create(token='foo')
+        device = Device.objects.create()
         device_id = {'id_type': 'GOOGLE_AD_ID', 'value': 'bar'}
         device.device_ids.create(**device_id)
         response = self.client.get('/devices/%s/' % device.pk)
@@ -115,7 +125,7 @@ class TestDevicesLive(LoggedInTestCase):
 
     def test_device_live(self):
         '''Renders the proper template'''
-        device = Device.objects.create(token='foo')
+        device = Device.objects.create()
         response = self.client.get('/devices/%s/live/' % device.pk)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'controlfreak/live_device.html')

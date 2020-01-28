@@ -11,34 +11,45 @@
 
   <style>
     table {
-	font-family: arial, sans-serif;
-	border-collapse: collapse;
-	width: 80%;
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 80%;
     }
 
     td, th {
-	border: 1px solid #dddddd;
-	text-align: left;
-	padding: 8px;
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
     }
 
     tr:nth-child(even) {
-	background-color: #dddddd;
+        background-color: #dddddd;
     }
 
     p {
-	border: 1px solid #dddddd;
-	width: 80%;
+        border: 1px solid #dddddd;
+        width: 80%;
     }
   </style>
 
   <body>
     <h1>Logs</h1>
-    <p>
+    <table>
+      <tr>
+        <th>Log</th>
+        <th>App</th>
+      </tr>
       {% for l in logs %}
-      {{ l.text }}
+        <tr>
+          <td>{{ l.text }}</td>
+          {% if l.app %}
+            <td>{{ l.app.name }}</td>
+          {% else %}
+            <td></td>
+          {% endif %}
+        </tr>
       {% endfor %}
-    </p>
+    </table>
 
     <h1>Credentials</h1>
     <table>
@@ -46,13 +57,19 @@
         <th>Target</th>
         <th>User</th>
         <th>Secret</th>
+        <th>App</th>
       </tr>
       {% for c in credentials %}
-      <tr>
-        <td>{{ c.target }}</td>
-        <td>{{ c.user }}</td>
-        <td>{{ c.secret }}</td>
-      </tr>
+        <tr>
+          <td>{{ c.target }}</td>
+          <td>{{ c.user }}</td>
+          <td>{{ c.secret }}</td>
+          {% if c.app %}
+            <td>{{ c.app.name }}</td>
+          {% else %}
+            <td></td>
+          {% endif %}
+        </tr>
       {% endfor %}
     </table>
   </body>

