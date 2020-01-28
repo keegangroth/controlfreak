@@ -35,6 +35,30 @@ class TokenInline(admin.TabularInline):
         return False
 
 
+class AppTokenInline(admin.TabularInline):
+    '''Token inline for display in App'''
+    model = models.Token
+    extra = 0
+    exclude = ['device']
+
+    @staticmethod
+    def device_link(obj):
+        '''Make a link to the associated device since that's what we really
+        care about'''
+        url = reverse('admin:server_device_change', args=[obj.device.id])
+        return format_html("<a href='{}'>{}</a>", url, obj.device)
+
+    device_link.admin_order_field = 'device'
+    device_link.short_description = 'device'
+
+    readonly_fields = ('device_link', 'token')
+
+    @staticmethod
+    def has_add_permission(request, obj=None):
+        '''Do not allow creates of new tokens'''
+        return False
+
+
 class CredentialInline(admin.TabularInline):
     '''Credential inline for display in Device'''
     model = models.Credential
@@ -66,6 +90,7 @@ class AppAdmin(admin.ModelAdmin):
     '''Admin view for App'''
     search_fields = ('name', 'api_key')
     list_display = ('name', 'api_key')
+    inlines = [AppTokenInline]
 
 
 class DeviceAdmin(admin.ModelAdmin):
