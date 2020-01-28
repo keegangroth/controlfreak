@@ -11,6 +11,7 @@ from django.db import transaction
 from django.db import IntegrityError
 from django.db.models import Q
 
+from server.helpers import unauthorized
 from server.models import Device, DeviceId, App
 from server.serializers import DeviceIdSerializer
 
@@ -25,7 +26,7 @@ def register(request):
     '''
     app = App.objects.filter(api_key=request.data.get('api_key')).first()
     if not app:
-        return Response({'detail': 'Authentication credentials were not provided.'}, status=403)
+        return unauthorized()
 
     request_ids = []
     if 'id_type' in request.data:

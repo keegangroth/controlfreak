@@ -17,18 +17,18 @@ class TestCredentialView(ClientTestCase, TokenFixture):
         self.assertEqual(response.status_code, 415)
 
     def test_without_token(self):
-        '''Returns 404 when no token is provided'''
+        '''Returns 403 when no token is provided'''
         response = self.client.post('/credentials/',
                                     json.dumps({}),
                                     content_type='application/json')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
     def test_invalid_token(self):
-        '''Returns 404 when the token does not exist'''
+        '''Returns 403 when the token does not exist'''
         response = self.client.post('/credentials/',
                                     json.dumps({'token': 'bogus'}),
                                     content_type='application/json')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
     def test_missing_target(self):
         '''Returns 400 for missing parameter'''
