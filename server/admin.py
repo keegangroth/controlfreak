@@ -10,9 +10,17 @@ from . import models
 class DeviceIdInline(admin.TabularInline):
     '''DeviceId inline for display in Device'''
     model = models.DeviceId
-    extra = 0
-    readonly_fields = ('id_type', 'value')
     can_delete = False
+
+    @staticmethod
+    def has_change_permission(request, obj=None):
+        '''Do not allow any edits to tokens'''
+        return False
+
+    @staticmethod
+    def has_add_permission(request, obj=None):
+        '''Do not allow creates of new DeviceIds'''
+        return False
 
 
 class TokenInline(admin.TabularInline):
@@ -32,6 +40,11 @@ class TokenInline(admin.TabularInline):
     @staticmethod
     def has_change_permission(request, obj=None):
         '''Do not allow any edits to tokens'''
+        return False
+
+    @staticmethod
+    def has_add_permission(request, obj=None):
+        '''Do not allow creates of new tokens'''
         return False
 
 

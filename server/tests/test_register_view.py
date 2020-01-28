@@ -18,7 +18,7 @@ class TestRegister(ClientTestCase):
         self.assertEqual(response.status_code, 415)
 
     def test_missing_api_key(self):
-        '''Returns 403 for missing device ids'''
+        '''Returns 403 for missing api key'''
         request = {}
         response = self.client.post('/register/',
                                     json.dumps(request),
@@ -26,7 +26,7 @@ class TestRegister(ClientTestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_invalid_api_key(self):
-        '''Returns 403 for missing device ids'''
+        '''Returns 403 for invalid api key'''
         request = {'api_key': 'bogus'}
         response = self.client.post('/register/',
                                     json.dumps(request),
