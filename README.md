@@ -229,5 +229,6 @@ have been run.
 
 ## TODO
 
-* stop using django debug mode when deployed
+* stop using django debug mode when deployed, see
+  https://docs.djangoproject.com/en/3.0/howto/deployment/
 * CI/CD infrastructure
