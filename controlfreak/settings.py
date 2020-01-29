@@ -23,7 +23,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'g)nvds9gb)(+2dd^9uj^5uo8nv)zgw2jlj#oqpfyj*5ygm3s#e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if 'DJANGO_DEBUG' in os.environ:
+    DEBUG = os.environ['DJANGO_DEBUG'].lower() == 'true'
+else:
+    DEBUG = True
+
 # not great, not sure how else to allow the alb through...
 ALLOWED_HOSTS = ['*']
 
@@ -120,6 +124,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+if 'STATIC_FILE_ROOT' in os.environ:
+    STATIC_ROOT = os.environ['STATIC_FILE_ROOT'] + STATIC_URL
 
 
 # django-rest-framework stuff

@@ -227,8 +227,35 @@ not be healthy (and therefore receive no traffic) until the migrations
 have been run.
 
 
+### Gunicorn and Nginx
+
+Django [strongly
+suggests](https://docs.djangoproject.com/en/3.0/howto/deployment/)
+using a separate webserver when running in production. This project
+uses [Gunicorn](https://gunicorn.org/) for this purpose. Gunicorn
+further [suggests deploying
+Nginx](https://gunicorn.org/#deployment). Nginx is also configured to
+serve Django's static files. This configuration is fully encoded in
+the Docker file.
+
+In order to test the server in this configuration, you can build the
+docker image and run something like `docker run --env
+DJANGO_DEBUG=false -p 8000:80 -v $(pwd):/usr/src/app controlfreak
+/bin/bash -c 'service nginx start && gunicorn controlfreak.wsgi -b
+0.0.0.0:8000'`. A few things to note about this command:
+
+* Nginx is expecting Gunicorn to be running on `0.0.0.0:8000`
+* Docker is binding port 80 from inside the container (which is Nginx)
+  back to 8000 on the host machine
+* DJANGO_DEBUG is set to false to fully simulate the production
+  environment's settings
+
+This configuration is not recommended for general development testing
+because it blocks or disables helpful error messages from
+Django. Instead, just use manage.py's runserver command (the docker
+default command).
+
+
 ## TODO
 
-* stop using django debug mode when deployed, see
-  https://docs.djangoproject.com/en/3.0/howto/deployment/
 * CI/CD infrastructure

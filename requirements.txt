@@ -1,8 +1,9 @@
 django ~= 3.0
 djangorestframework
 
-# required to connect to a mysql db, e.g. when deployed
+# libraries required for deployment configuration
 mysqlclient
+gunicorn
 
 # development dependencies (testing, etc)
 coverage
