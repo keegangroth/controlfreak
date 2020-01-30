@@ -4,6 +4,7 @@ djangorestframework
 # libraries required for deployment configuration
 mysqlclient
 gunicorn
+python-json-logger
 
 # development dependencies (testing, etc)
 coverage
